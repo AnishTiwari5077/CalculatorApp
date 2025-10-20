@@ -7,93 +7,131 @@ class CalculatorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<CalculatorModel>(context);
-
-    final buttons = [
-      'C',
-      '(',
-      ')',
-      '÷',
-      '7',
-      '8',
-      '9',
-      '×',
-      '4',
-      '5',
-      '6',
-      '-',
-      '1',
-      '2',
-      '3',
-      '+',
-      '0',
-      '.',
-      '=',
+    print('h');
+    // Define calculator buttons
+    final buttonRows = [
+      ['C', '(', ')', '/'],
+      ['7', '8', '9', '*'],
+      ['4', '5', '6', '-'],
+      ['1', '2', '3', '+'],
+      ['0', '.', '='],
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFE6EBF0),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            // Expression display
-            Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                model.expression,
-                style: const TextStyle(color: Colors.white70, fontSize: 24),
-              ),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Spacer(),
 
-            // Result display
-            Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                model.output,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
+              // Expression
+              Align(
+                alignment: Alignment.centerRight,
+                child: Consumer<CalculatorModel>(
+                  builder: (context, model, child) {
+                    return Text(
+                      model.expression,
+                      style: const TextStyle(fontSize: 26, color: Colors.grey),
+                    );
+                  },
                 ),
               ),
-            ),
+              const SizedBox(height: 10),
 
-            // Buttons grid
-            GridView.builder(
-              shrinkWrap: true,
-              itemCount: buttons.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 1.3,
-              ),
-              itemBuilder: (context, index) {
-                final text = buttons[index];
-                return GestureDetector(
-                  onTap: () => model.handleButtonPress(text),
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: text == '=' ? Colors.orange : Colors.grey[850],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        text,
-                        style: TextStyle(
-                          fontSize: 26,
-                          color: text == '=' ? Colors.white : Colors.white70,
-                          fontWeight: FontWeight.bold,
-                        ),
+              // Output
+              Align(
+                alignment: Alignment.centerRight,
+                child: Consumer<CalculatorModel>(
+                  builder: (context, model, child) {
+                    return Text(
+                      model.output,
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Buttons
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: buttonRows.map((row) {
+                    return Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: row.map((label) {
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CalculatorButton(
+                                text: label,
+                                onTap: () => context
+                                    .read<CalculatorModel>()
+                                    .handleButtonPress(label),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CalculatorButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const CalculatorButton({super.key, required this.text, required this.onTap});
+
+  bool get isOperator =>
+      ['+', '-', '*', '/', '=', '(', ')', '×', '÷'].contains(text);
+
+  @override
+  Widget build(BuildContext context) {
+    const baseColor = Color(0xFFE6EBF0);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: baseColor,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            const BoxShadow(
+              color: Colors.white,
+              offset: Offset(-3, -3),
+              blurRadius: 6,
+            ),
+            BoxShadow(
+              color: Colors.grey.shade400,
+              offset: const Offset(3, 3),
+              blurRadius: 6,
             ),
           ],
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: isOperator ? 26 : 22,
+              fontWeight: FontWeight.bold,
+              color: isOperator ? Colors.indigo : Colors.black87,
+            ),
+          ),
         ),
       ),
     );

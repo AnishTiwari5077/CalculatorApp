@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class CalculatorModel with ChangeNotifier {
-  String _expression = '';
-  String _output = '0';
+  String _expression = ''; // Expression being typed
+  String _output = '0'; // Result or current display
   bool _isResultShown = false;
 
   String get expression => _expression;
   String get output => _output;
 
-  /// Handles all button presses
-  void handleButtonPress(String buttonText) {
-    switch (buttonText) {
+  void handleButtonPress(String value) {
+    switch (value) {
       case 'C':
         _clear();
         break;
@@ -19,86 +18,83 @@ class CalculatorModel with ChangeNotifier {
         _evaluate();
         break;
       default:
-        _appendExpression(buttonText);
+        _appendValue(value);
         break;
     }
     notifyListeners();
   }
 
-  /// Append pressed button to expression
-  void _appendExpression(String value) {
-    if (_isResultShown && RegExp(r'[0-9(]').hasMatch(value)) {
-      // Start a new calculation if last was result
-      _expression = '';
-      _output = '0';
+  void _appendValue(String value) {
+    if (_isResultShown) {
+      // If a result was just shown, start new expression properly
+      if (_isOperator(value)) {
+        _expression = _output + value;
+      } else {
+        _expression = value;
+      }
       _isResultShown = false;
-    }
-
-    // Prevent invalid repeated operators
-    if (_expression.isNotEmpty &&
-        RegExp(r'[+\-*/÷×%]').hasMatch(value) &&
-        RegExp(r'[+\-*/÷×%]').hasMatch(_expression[_expression.length - 1])) {
-      _expression =
-          _expression.substring(0, _expression.length - 1) +
-          value; // replace operator
     } else {
-      _expression += value;
+      // Add implicit multiplication: number followed by '(' → add '*'
+      if (_expression.isNotEmpty &&
+          _expression[_expression.length - 1].contains(RegExp(r'[0-9)]')) &&
+          value == '(') {
+        _expression += '*(';
+      }
+      // Also handle ')' followed immediately by number → add '*'
+      else if (_expression.isNotEmpty &&
+          _expression[_expression.length - 1] == ')' &&
+          value.contains(RegExp(r'[0-9(]'))) {
+        _expression += '*$value';
+      } else {
+        // Normal case
+        _expression += value;
+      }
     }
 
     _output = _expression;
   }
 
-  /// Evaluate the full expression using modern math_expressions API
+  void _clear() {
+    _expression = '';
+    _output = '0';
+    _isResultShown = false;
+  }
+
   void _evaluate() {
     if (_expression.isEmpty) return;
 
     try {
-      String parsedExpr = _expression
-          .replaceAll('×', '*')
-          .replaceAll('÷', '/')
-          .replaceAll('%', '/100');
+      // Normalize symbols
+      String parsedExpr = _expression.replaceAll('×', '*').replaceAll('÷', '/');
 
-      // Automatically insert * for implicit multiplication like 5(5+5)
-      parsedExpr = parsedExpr.replaceAllMapped(
-        RegExp(r'(\d|\))\('),
-        (match) => '${match.group(1)}*(',
-      );
-
-      // Use modern ShuntingYardParser
+      // Parse (ShuntingYardParser is fine; GrammarParser is the recommended new parser)
       final parser = ShuntingYardParser();
       final Expression exp = parser.parse(parsedExpr);
 
-      // Evaluate safely
+      // Evaluate using RealEvaluator (method is `evaluate`, not `eval`)
       final evaluator = RealEvaluator();
       final num resultNum = evaluator.evaluate(exp);
 
-      _output = _formatResult(resultNum.toDouble());
+      // Convert to string nicely
+      final double result = resultNum.toDouble();
+      _output = _formatResult(result);
+
       _expression += ' =';
       _isResultShown = true;
     } catch (e) {
       _output = 'Error';
       _isResultShown = true;
     }
-
-    notifyListeners();
   }
 
-  /// Reset calculator
-  void _clear() {
-    _expression = '';
-    _output = '0';
-    _isResultShown = false;
-    notifyListeners();
+  bool _isOperator(String value) {
+    return ['+', '-', '*', '/', '×', '÷'].contains(value);
   }
 
-  /// Format result to remove trailing .0
-  String _formatResult(double value) {
-    if (value == value.roundToDouble()) {
-      return value.toInt().toString();
-    } else {
-      String formatted = value.toStringAsFixed(8);
-      formatted = formatted.replaceFirst(RegExp(r'\.?0+$'), '');
-      return formatted;
+  String _formatResult(double number) {
+    if (number % 1 == 0) {
+      return number.toInt().toString();
     }
+    return number.toString();
   }
 }
