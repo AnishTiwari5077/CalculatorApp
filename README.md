@@ -29,6 +29,9 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 
 ## screenshot
 <img width="315" height="700" alt="3" src="https://github.com/user-attachments/assets/dcb718d7-db84-4fbc-9878-9b741052a4b8" />
+<img width="315" height="700" alt="Screenshot_1764677942" src="https://github.com/user-attachments/assets/c0aa44c7-9082-4565-8cef-af4af72d708f" />
+<img width="315" height="700" alt="Screenshot_1764677887" src="https://github.com/user-attachments/assets/d107e0d1-b607-48d1-9199-4a04a35061ec" />
+
 
 
 
