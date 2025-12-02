@@ -10,7 +10,7 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 - 🧠 **Smart Input**: Automatic implicit multiplication (e.g., `2(3+4)` = `2×(3+4)`)
 - ⌫ **Backspace**: Delete the last entered character
 - 🔄 **Clear Function**: Reset calculator with a single tap
-- 🎯 **Error Handling**: Comprehensive validation with user-friendly error messages<img width="1080" height="2400" alt="Screenshot_1764677871" src="https://github.com/user-attachments/assets/275dbdb5-dc76-49a5-aa59-20695f6db86a" />
+- 🎯 **Error Handling**: Comprehensive validation with user-friendly error messages
 
 
 ### Professional Disp
@@ -28,7 +28,8 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 - ⚡ **Real-time Preview**: See your expression as you type
 
 ## screenshot
-<img width="300" height="300" alt="Screenshot_1764677871" src="https://github.com/user-attachments/assets/94150a11-98ad-409d-8006-4b1499ddaa0b" />
+<img width="1080" height="2400" alt="1" src="https://github.com/user-attachments/assets/73865060-896d-40ac-a4d0-bdc15d9a2e8f" />
+
 
 
 
