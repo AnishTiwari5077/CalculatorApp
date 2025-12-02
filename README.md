@@ -2,7 +2,7 @@
 
 A beautiful, Simple calculator application built with Flutter featuring a modern neumorphic design and advanced mathematical capabilities.
 
-## ✨ Features
+### ✨ Features
 
 ### Core Functionality
 - ✅ **Basic Operations**: Addition, subtraction, multiplication, and division
