@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
 class CalculatorModel with ChangeNotifier {
-  String _expression = ''; // Expression being typed
-  String _output = '0'; // Result or current display
+  String _expression = '';
+  String _output = '0';
   bool _isResultShown = false;
 
   String get expression => _expression;
@@ -13,6 +13,9 @@ class CalculatorModel with ChangeNotifier {
     switch (value) {
       case 'C':
         _clear();
+        break;
+      case '⌫':
+        _backspace();
         break;
       case '=':
         _evaluate();
@@ -26,7 +29,6 @@ class CalculatorModel with ChangeNotifier {
 
   void _appendValue(String value) {
     if (_isResultShown) {
-      // If a result was just shown, start new expression properly
       if (_isOperator(value)) {
         _expression = _output + value;
       } else {
@@ -34,24 +36,50 @@ class CalculatorModel with ChangeNotifier {
       }
       _isResultShown = false;
     } else {
-      // Add implicit multiplication: number followed by '(' → add '*'
-      if (_expression.isNotEmpty &&
+      if (_isOperator(value) &&
+          _expression.isNotEmpty &&
+          _isOperator(_expression[_expression.length - 1])) {
+        // Replace the last operator with the new one
+        _expression = _expression.substring(0, _expression.length - 1) + value;
+      } else if (_expression.isEmpty && _isOperator(value) && value != '-') {
+        return;
+      } else if (_expression.isNotEmpty &&
           _expression[_expression.length - 1].contains(RegExp(r'[0-9)]')) &&
           value == '(') {
-        _expression += '*(';
+        _expression += '×(';
       }
-      // Also handle ')' followed immediately by number → add '*'
+      // Handle ')' followed by number or '(' → add multiplication
       else if (_expression.isNotEmpty &&
           _expression[_expression.length - 1] == ')' &&
           value.contains(RegExp(r'[0-9(]'))) {
-        _expression += '*$value';
+        _expression += '×$value';
+      }
+      // Prevent multiple decimal points in the same number
+      else if (value == '.') {
+        // Check if the current number already has a decimal point
+        final lastNumberMatch = RegExp(r'[\d.]+$').firstMatch(_expression);
+        if (lastNumberMatch != null &&
+            lastNumberMatch.group(0)!.contains('.')) {
+          return; // Already has a decimal point
+        }
+        _expression += value;
       } else {
-        // Normal case
         _expression += value;
       }
     }
-
     _output = _expression;
+  }
+
+  void _backspace() {
+    if (_isResultShown) {
+      _clear();
+      return;
+    }
+
+    if (_expression.isNotEmpty) {
+      _expression = _expression.substring(0, _expression.length - 1);
+      _output = _expression.isEmpty ? '0' : _expression;
+    }
   }
 
   void _clear() {
@@ -67,24 +95,47 @@ class CalculatorModel with ChangeNotifier {
       // Normalize symbols
       String parsedExpr = _expression.replaceAll('×', '*').replaceAll('÷', '/');
 
-      // Parse (ShuntingYardParser is fine; GrammarParser is the recommended new parser)
+      // Check for balanced parentheses
+      if (!_areParenthesesBalanced(parsedExpr)) {
+        _output = 'Error: Unmatched parentheses';
+        _isResultShown = true;
+        return;
+      }
+
       final parser = ShuntingYardParser();
       final Expression exp = parser.parse(parsedExpr);
-
-      // Evaluate using RealEvaluator (method is `evaluate`, not `eval`)
       final evaluator = RealEvaluator();
       final num resultNum = evaluator.evaluate(exp);
 
-      // Convert to string nicely
-      final double result = resultNum.toDouble();
-      _output = _formatResult(result);
+      // Handle special cases
+      if (resultNum.isNaN) {
+        _output = 'Error: Invalid operation';
+      } else if (resultNum.isInfinite) {
+        _output = 'Error: Division by zero';
+      } else {
+        final double result = resultNum.toDouble();
+        _output = _formatResult(result);
+      }
 
       _expression += ' =';
       _isResultShown = true;
     } catch (e) {
-      _output = 'Error';
+      _output = 'Error: Invalid expression';
       _isResultShown = true;
     }
+  }
+
+  bool _areParenthesesBalanced(String expr) {
+    int count = 0;
+    for (int i = 0; i < expr.length; i++) {
+      if (expr[i] == '(') {
+        count++;
+      } else if (expr[i] == ')') {
+        count--;
+        if (count < 0) return false;
+      }
+    }
+    return count == 0;
   }
 
   bool _isOperator(String value) {
@@ -92,9 +143,20 @@ class CalculatorModel with ChangeNotifier {
   }
 
   String _formatResult(double number) {
+    // Handle very large or very small numbers with scientific notation
+    if (number.abs() > 1e15 || (number.abs() < 1e-6 && number != 0)) {
+      return number.toStringAsExponential(6);
+    }
+
+    // For integers, show as integer
     if (number % 1 == 0) {
       return number.toInt().toString();
     }
-    return number.toString();
+
+    // For decimals, limit to reasonable precision
+    return number
+        .toStringAsFixed(10)
+        .replaceAll(RegExp(r'0+$'), '')
+        .replaceAll(RegExp(r'\.$'), '');
   }
 }
