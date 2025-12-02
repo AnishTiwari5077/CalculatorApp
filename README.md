@@ -26,11 +26,9 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 - 🔄 **Result Chaining**: Continue calculations using previous results
 - ⚡ **Real-time Preview**: See your expression as you type
 
-## 📸 Screenshots<img width="400" height="400" alt="Screenshot_1764677871" src="https://github.com/user-attachments/assets/06da8395-c1e6-4fda-92b4-812550bede62" />
+## screenshot
+<img width="1080" height="2400" alt="Screenshot_1764677871" src="https://github.com/user-attachments/assets/023e4ddd-c3b6-4b19-87ab-33dd98da3f2a" />
 
-![alt](https://github.com/AnishTiwari5077/CalculatorApp/tree/9d6bc169ab2b183f795b6144286ff5acb570fd6b/calculator_app/screenshot)
-<img width="1080" height="2400" alt="Screenshot_1764677887" src="https://github.com/user-attachments/assets/e0efe811-bd02-4592-aab8-44a71aebb59d" />
-<img width="1080" height="2400" alt="Screenshot_1764677942" src="https://github.com/user-attachments/assets/da37178d-c2c6-4b87-999c-84e46135133f" />
 
 
 
