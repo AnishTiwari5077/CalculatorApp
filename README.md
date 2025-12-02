@@ -27,7 +27,7 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 - ⚡ **Real-time Preview**: See your expression as you type
 
 ## 📸 Screenshots
-![alt](https:)
+![alt](https:calculator_app/screenshot)
 
 
 ## 🎨 Design
