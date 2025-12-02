@@ -79,7 +79,7 @@ lib/
     └── splash_screen.dart
     
 └── main.dart  
-                         # App entry point
+                         ## App entry point
 
 ## 🚀 Getting Started
 
