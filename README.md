@@ -28,7 +28,8 @@ A beautiful, Simple calculator application built with Flutter featuring a modern
 - ⚡ **Real-time Preview**: See your expression as you type
 
 ## screenshot
-<img width="1080" height="2400" alt="1" src="https://github.com/user-attachments/assets/73865060-896d-40ac-a4d0-bdc15d9a2e8f" />
+<img width="500" height="1111" alt="2" src="https://github.com/user-attachments/assets/9208ad29-8c3c-4ccb-9237-994589af5333" />
+
 
 
 
