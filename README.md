@@ -215,9 +215,7 @@ Contributions are welcome! Here's how you can help:
 - Add comments for complex logic
 - Test thoroughly before submitting PR
 
-## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 - GitHub: [@Anishtiwari5077](https://github.com/AnishTiwari5077)
