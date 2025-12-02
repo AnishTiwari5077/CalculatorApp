@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: RotationTransition(
                 turns: _controller,
                 child: Image.asset(
-                  'assets/calculator.jpg',
+                  'assets/calculator.png',
                   width: 200,
                   height: 200,
                   fit: BoxFit.cover,
